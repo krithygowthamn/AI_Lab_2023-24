@@ -1,14 +1,114 @@
-# Ex.No: 10 Learning – Use Supervised Learning  
-### DATE:                                                                            
-### REGISTER NUMBER : 
+# Ex.No: 13 Learning – Use Supervised Learning  
+### DATE:31-10-25                                                                            
+### REGISTER NUMBER : 212222220013
 ### AIM: 
-To write a program to train the classifier for -----------------.
+To write a program to train the classifier for crop predicion.
 ###  Algorithm:
+1.Data Loading and Preprocessing
+2.Feature Selection or Dimensionality Reduction
+3.Clustering 
+4.Visualization and Interpretation 
+5.Anomaly or Outlier Detection 
+6.Insights and Reporting
 
 ### Program:
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# --- 1. Model Logic (Simplified from the Streamlit app) ---
+
+def predict_crop_rules(temp, rainfall, ph=6.5, N=50, P=50, K=50):
+    """
+    Applies the core crop prediction logic based on NPK, pH, Temp, and Rainfall.
+    NOTE: We fix N, P, K, and pH to favorable defaults (50/50/50 and 6.5)
+    to focus the visualization purely on the impact of Temperature and Rainfall.
+    """
+    
+    # Check for general pH range where specific crops are distinguished
+    if 6.0 <= ph <= 7.5:
+        # Core logic based on Temperature and Rainfall
+        if temp > 25 and rainfall > 100:
+            crop = "Rice (Hot & Wet)"
+        elif 20 <= temp <= 28 and rainfall < 70: # Humidity condition mapped to relative rainfall
+            crop = "Wheat (Warm & Moderate)"
+        elif temp > 27 and rainfall < 50:
+            crop = "Cotton (Hot & Dry)"
+        elif 20 <= temp <= 30 and rainfall >= 70:
+            crop = "Sugarcane (Warm & Humid/Wet)"
+        else:
+            crop = "Maize (Default/General)"
+    else:
+        # Catch-all for non-ideal pH levels
+        crop = "Millets/Pulses (pH-Sensitive)"
+
+    return crop
+
+# --- 2. Data Simulation and Prediction ---
+
+# Define the ranges for our simulation (e.g., common agricultural ranges)
+temp_min, temp_max, temp_steps = 15, 35, 100
+rain_min, rain_max, rain_steps = 0, 150, 100
+
+# Create a grid (meshgrid) of Temperature and Rainfall values
+# This generates every combination of Temp and Rain within the ranges
+temp_grid = np.linspace(temp_min, temp_max, temp_steps)
+rain_grid = np.linspace(rain_min, rain_max, rain_steps)
+
+# Generate the mesh arrays
+T, R = np.meshgrid(temp_grid, rain_grid)
+
+# Create a flattened list of all T and R pairs
+temp_list = T.flatten()
+rain_list = R.flatten()
+
+# Apply the prediction function to every simulated data point
+predictions = [predict_crop_rules(t, r) for t, r in zip(temp_list, rain_list)]
+
+# Create a DataFrame for easy plotting
+df_sim = pd.DataFrame({
+    'Temperature': temp_list,
+    'Rainfall': rain_list,
+    'Predicted Crop': predictions
+})
+
+# --- 3. Visualization ---
+
+# Set a clean Seaborn style
+sns.set_style("whitegrid")
+plt.figure(figsize=(12, 8))
+
+# Use a scatter plot to show the predicted crop for each point
+# The 'hue' parameter colors the plot based on the predicted crop
+sns.scatterplot(
+    data=df_sim,
+    x='Temperature',
+    y='Rainfall',
+    hue='Predicted Crop',
+    style='Predicted Crop', # Use different markers too
+    palette='viridis',     # Choose a distinct color palette
+    s=50,                  # Size of the points
+    alpha=0.8
+)
+
+# Enhance the plot aesthetics
+plt.title('Visualization of Rule-Based Crop Prediction Decision Boundaries', fontsize=16)
+plt.xlabel('Temperature (°C)', fontsize=14)
+plt.ylabel('Rainfall (mm)', fontsize=14)
+plt.legend(title='Recommended Crop', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout(rect=[0, 0, 0.9, 1]) # Adjust layout to make room for legend
+
+# Display the plot
+plt.show()
+
+
 
 ### Output:
+
+![download](https://github.com/user-attachments/assets/9ba130f7-282e-49fe-b743-6236589e6886)
 
 
 ### Result:
